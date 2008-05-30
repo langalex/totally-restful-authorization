@@ -1,0 +1,35 @@
+totally restful authorization
+==============================
+
+This plugin adds an authorization layer to your rails app that is <del>completely</del> totally transparent to your restful controllers. all you have to is include a module in your controller and provide 4 methods in your model that control who is allowed to access it or not. the controllers will then automatically block or allow the usual crud actions (new, create, edit, update, show, destroy) to run or not.
+
+How it works
+============
+
+Include PermisionCheck in your restful controller and add these methods to your model:
+
+def updatable_by?(user, field = nil)
+  true
+end
+
+def creatable_by?(user, field = nil)
+  true
+end
+
+def destroyable_by?(user)
+  true
+end
+
+def	viewable_by?(user)
+  true
+end
+
+The fields parameter is either nil to determine if an object can be updated as a whole or a symbol of a field name. The user parameter is taken from the current_user in your controller (so you have to provide a current_user method, or install restful_authentication or something like that).
+
+From now on your controller will run a before filter before the new/create/edit/update/destroy/show actions to make sure that the current_user is allowed to update/create/destroy/view the model. If you dont't implement a method no permission checks will be performed and the before_filter will pass.
+
+=================================================================
+
+For questions, patches etc. contact alex[at]upstream-berlin.com
+
+Copyright (c) 2008 Alexander Lang, released under the MIT license
