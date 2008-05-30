@@ -20,7 +20,7 @@ def destroyable_by?(user)
   true
 end
 
-def	viewable_by?(user)
+def	viewable_by?(user, field = nil)
   true
 end
 
