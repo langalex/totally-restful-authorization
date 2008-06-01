@@ -1,4 +1,4 @@
-totally restful authorization
+totally restful authentication
 ==============================
 
 This plugin adds an authorization layer to your rails app that is <del>completely</del> totally transparent to your restful controllers. all you have to is include a module in your controller and provide 4 methods in your model that control who is allowed to access it or not. the controllers will then automatically block or allow the usual crud actions (new, create, edit, update, show, destroy) to run or not.
@@ -6,27 +6,47 @@ This plugin adds an authorization layer to your rails app that is <del>completel
 How it works
 ============
 
-Include PermisionCheck in your restful controller and add these methods to your model:
+Include the PermisionCheck Module in your restful controller...
 
-def updatable_by?(user, field = nil)
-  true
+class ApplicationController < ActionController::Base
+  include PermissionCheck
 end
 
-def creatable_by?(user, field = nil)
-  true
+... and then declare the permissions in your model:
+
+class User
+	updatable_by :admin # updatable if updater.admin? return true
+	updatable_by :self, :except => [:admin] # special role self, allow all attributes except some to be updated
+	updatable_by :newbie, :only => [:description] # only allow some attribute to be updated
+	
+	viewable_by :anyone # special role, includes nil
+	
+	destroyable_by [:admin, :root] # declare multiple roles at once
 end
 
-def destroyable_by?(user)
-  true
+Or implement one or more of these four methods directly:
+
+class User
+  def updatable_by?(user, field = nil)
+    true
+  end
+  
+  def creatable_by?(user, field = nil)
+    true
+  end
+  
+  def destroyable_by?(user)
+    true
+  end
+  
+  def	viewable_by?(user)
+    true
+  end
 end
 
-def	viewable_by?(user, field = nil)
-  true
-end
+The fields parameter is either nil to determine if an object can be updated at all or a symbol of a field name. The user parameter is taken from the current_user in your controller (so you have to provide a current_user method, or install restful_authentication or something like that).
 
-The fields parameter is either nil to determine if an object can be updated as a whole or a symbol of a field name. The user parameter is taken from the current_user in your controller (so you have to provide a current_user method, or install restful_authentication or something like that).
-
-From now on your controller will run a before filter before the new/create/edit/update/destroy/show actions to make sure that the current_user is allowed to update/create/destroy/view the model. If you dont't implement a method no permission checks will be performed and the before_filter will pass.
+From now on your controller will run a before filter before the new/create/edit/update/destroy/show actions to make sure that the current_user is allowed to update/create/destroy/view the model. If you don't declare any permissions no actions can be performed on your model.
 
 =================================================================
 
