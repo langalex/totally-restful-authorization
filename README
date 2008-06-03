@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
   include PermissionCheck
 end
 
-... and then declare the permissions in your model (Check the unit tests for a complete overview.):
+... and then declare the permissions in your model:
 
 class User
 	updatable_by :admin # updatable if updater.admin? return true
@@ -20,11 +20,12 @@ class User
 	updatable_by :newbie, :only => [:description] # only allow some attribute to be updated
 	
 	viewable_by :anyone # special role, includes nil
+	viewable_by :developer, :condition => lambda{|user, viewer| user.non_developer? && viewer.account_activated?} # use conditions for more complex permissions
 	
 	destroyable_by [:admin, :root] # declare multiple roles at once
 end
 
-Or implement one or more of these methods directly:
+Or implement one or more of these four methods directly:
 
 class User
   def updatable_by?(user, field = nil)

@@ -76,12 +76,12 @@ class PermissionDslTest < Test::Unit::TestCase
   end
   
   def test_allows_access_if_conditions_met
-    @clazz.send :updatable_by, :admin, :condition => lambda{|user| user.admin?}
+    @clazz.send :updatable_by, :admin, :condition => lambda{|model, updater| updater.admin?}
     assert @clazz.new.updatable_by?(stub('admin', :admin? => true))
   end
   
   def test_forbids_access_if_condition_not_met
-    @clazz.send :updatable_by, :admin, :condition => lambda{|user| !user.admin?}
+    @clazz.send :updatable_by, :admin, :condition => lambda{|model, updater| !updater.admin?}
     assert !@clazz.new.updatable_by?(stub('admin', :admin? => true))
   end
   

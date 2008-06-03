@@ -120,7 +120,7 @@ module PermissionDsl
   
   def condition_met(user, options)
     if options[:condition]
-      options[:condition].call(user)
+      options[:condition].call(self, user)
     else
       true
     end
