@@ -1,4 +1,4 @@
-totally restful authentication
+totally restful authorization
 ==============================
 
 This plugin adds an authorization layer to your rails app that is <del>completely</del> totally transparent to your restful controllers. all you have to is include a module in your controller and provide 4 methods in your model that control who is allowed to access it or not. the controllers will then automatically block or allow the usual crud actions (new, create, edit, update, show, destroy) to run or not.
