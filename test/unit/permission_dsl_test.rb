@@ -21,7 +21,7 @@ class PermissionDslTest < Test::Unit::TestCase
   def test_understands_multiple_roles_at_once
     @clazz.send :updatable_by, [:admin, :superadmin]
     assert @clazz.new.updatable_by?(stub('admin', :admin? => true, :superadmin? => false))
-    assert @clazz.new.updatable_by?(stub('superadmin', :admin => false, :superadmin? => true))
+    assert @clazz.new.updatable_by?(stub('superadmin', :admin? => false, :superadmin? => true))
   end
   
   def test_is_not_updatable_for_nil
