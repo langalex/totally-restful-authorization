@@ -8,27 +8,37 @@ module PermissionCheck
   
   def check_instance_permissions
     begin
-    model = model_class.find params[:id]
-    deny_access_unless permission_granted?(model)
-  rescue => e
-    p e.message
-    raise e
-  end
-  end
-  
-  def check_create_permissions
-    begin
-    model = model_class.new
-    deny_access_unless permission_granted?(model)
+      deny_access_unless permission_granted?(object)
     rescue => e
       p e.message
       raise e
     end
   end
   
-  def permission_granted?(model)
-    if model.respond_to? actionable_method.to_sym
-      model.send(actionable_method, current_user)
+  def check_create_permissions
+    begin
+    deny_access_unless permission_granted?(build_object)
+    rescue => e
+      p e.message
+      raise e
+    end
+  end
+  
+  def object
+    object_class.find params[:id]
+  end
+  
+  def build_object
+    object_class.new
+  end
+  
+  def object_class
+    Class.const_get self.class.name[0..-12]
+  end
+  
+  def permission_granted?(_object)
+    if _object.respond_to? actionable_method.to_sym
+      _object.send(actionable_method, current_user)
     else
       true
     end
@@ -64,7 +74,4 @@ module PermissionCheck
     }[actionable] || actionable
   end
   
-  def model_class
-    Class.const_get self.class.name[0..-12]
-  end
 end
