@@ -52,11 +52,14 @@ module PermissionCheck
     if boolean
       true
     else
-      render :text => 'Permission Denied', :status => 403
+      permission_denied
       false
     end
   end
   
+  def permission_denied
+    render :text => 'Permission Denied', :status => 403
+  end
   
   def actionable_name
     if params[:action][-1,1]  == 'e'
