@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class PermissionDslTest < Test::Unit::TestCase
   class Model
-    include PermissionDsl
+    include TotallyRestfulAuthorization::PermissionDsl
   end
   
   def setup

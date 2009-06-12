@@ -8,7 +8,7 @@ class Model; end
 
 class ModelsController < ActionController::Base
   attr_accessor :current_user
-  include PermissionCheck
+  check_authorization
   
   def update
     @model = Model.find params[:id]
@@ -38,7 +38,7 @@ class ModelsController < ActionController::Base
   end
 end
 
-class PermissionCheckTest < Test::Unit::TestCase
+class PermissionCheckTest < ActionController::TestCase
   
   def setup
     @user = stub 'user'
