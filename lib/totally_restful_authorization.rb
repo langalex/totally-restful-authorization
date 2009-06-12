@@ -4,7 +4,7 @@ require 'totally_restful_authorization/permission_check'
 require 'totally_restful_authorization/permission_dsl'
 
 if defined?(ActiveRecord::Base)
-  ActiveRecord::Base.send :include, PermissionDsl
+  ActiveRecord::Base.send :include, TotallyRestfulAuthorization::PermissionDsl
 end
 
 if defined?(ActionController::Base)
