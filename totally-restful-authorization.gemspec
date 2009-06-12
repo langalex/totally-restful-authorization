@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{totally-restful-authorization}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alexander Lang"]
@@ -23,7 +23,8 @@ Gem::Specification.new do |s|
      "rails/init.rb",
      "test/test_helper.rb",
      "test/unit/permission_check_test.rb",
-     "test/unit/permission_dsl_test.rb"
+     "test/unit/permission_dsl_test.rb",
+     "totally-restful-authorization.gemspec"
   ]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/langalex/totally_restful_authorization}
