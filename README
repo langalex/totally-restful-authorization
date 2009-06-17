@@ -6,21 +6,24 @@ This plugin adds an authorization layer to your rails app that is <del>completel
 How it works
 ============
 
-Include the PermisionCheck Module in your restful controller...
+Call _check_authorization_ in your restful controller...
 
 class ApplicationController < ActionController::Base
-  include PermissionCheck
+  check_authorization
 end
 
 ... and then declare the permissions in your model:
 
 class User
 	updatable_by :admin # updatable if updater.admin? return true
-	updatable_by :self, :except => [:admin] # special role self, allow all attributes except some to be updated
-	updatable_by :newbie, :only => [:description] # only allow some attribute to be updated
+	updatable_by :admin, :only => [:description] # only allow some attribute to be updated
+	updatable_by :self # special role self, allows the object to update itself
+	updatable_by :associated => :friend # allow user.friend to update the object
 	
 	viewable_by :anyone # special role, includes nil
-	viewable_by :developer, :condition => lambda{|user, viewer| user.non_developer? && viewer.account_activated?} # use conditions for more complex permissions
+	viewable_by :admin, :condition => lambda{|user, viewer| user.non_admin? && viewer.account_activated?} # use conditions for more complex permissions
+	
+	
 	
 	destroyable_by [:admin, :root] # declare multiple roles at once
 end

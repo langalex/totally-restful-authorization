@@ -5,6 +5,7 @@ class PermissionDslTest < Test::Unit::TestCase
     include TotallyRestfulAuthorization::PermissionDsl
   end
   
+  
   def setup
     @clazz = Model
     @clazz.update_permissions.clear
@@ -33,6 +34,19 @@ class PermissionDslTest < Test::Unit::TestCase
     @clazz.send :updatable_by, :self
     _self = @clazz.new
     assert _self.updatable_by?(_self)
+  end
+  
+  def test_hash_with_associated_is_interpreted_as_attributes_on_the_object
+    @clazz.class_eval do
+      attr_accessor :user
+      updatable_by(:associated => :user)
+    end
+    
+    instance = @clazz.new
+    user = 'user'
+    instance.user = user
+    assert instance.updatable_by?(user)
+    assert !instance.updatable_by?('other user')
   end
   
   def test_special_role_anyone_is_interpreted_as_any_object
@@ -112,7 +126,7 @@ class PermissionDslTest < Test::Unit::TestCase
     assert @clazz.new.destroyable_by?(stub('admin', :admin? => true))
   end
   
-  def test_declarations_in_inherited_class_dont_interferce_with_superclass
+  def test_declarations_in_inherited_class_dont_interfere_with_superclass
     @clazz2 = Class.new @clazz
     @clazz2.send :destroyable_by, :admin
     assert !@clazz.new.destroyable_by?(stub('admin', :admin? => true))

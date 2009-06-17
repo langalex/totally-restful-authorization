@@ -51,7 +51,7 @@ module TotallyRestfulAuthorization
       private
     
       def add_options(permissions, role, options)
-        if role.respond_to?(:each)
+        if role.is_a?(Array)
           role.each do |_role|
             add_options permissions, _role, options
           end
@@ -88,13 +88,15 @@ module TotallyRestfulAuthorization
   
     def check_permission(permission, role, user, field)
       permission.inject(false) do |result, role_options|
-        result || (user_has_role(user, role) && field_in_only_list(field, role_options) &&
+        result || (user_has_permission(user, role) && field_in_only_list(field, role_options) &&
           !field_in_except_list(field, role_options) && condition_met(user, role_options))
       end
     end
   
-    def user_has_role(user, role)
-      if role == :self
+    def user_has_permission(user, role)
+      if role.is_a?(Hash)
+        self.send(role[:associated]) == user
+      elsif role == :self
         user == self
       elsif role == :anyone
         true
