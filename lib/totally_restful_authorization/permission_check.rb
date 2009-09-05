@@ -34,7 +34,7 @@ module TotallyRestfulAuthorization
     end
   
     def object_class
-      Class.const_get self.class.name[0..-12]
+      self.class.name[0..-11].singularize.split('::').last.constantize
     end
   
     def permission_granted?(_object)

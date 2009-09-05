@@ -1,6 +1,4 @@
 require 'rubygems'
-gem 'mocha'
-gem 'actionpack'
 require 'actionpack'
 require 'action_controller'
 require 'action_controller/test_process'

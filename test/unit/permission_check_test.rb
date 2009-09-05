@@ -5,6 +5,23 @@ ActionController::Routing::Routes.draw do |map|
 end
 
 class Model; end
+class Property; end
+
+class PropertiesController < ActionController::Base
+  attr_accessor :current_user
+  check_authorization
+  
+  def show; end
+end
+
+module Admin
+  class PropertiesController < ActionController::Base
+    attr_accessor :current_user
+    check_authorization
+  
+    def show; end
+  end
+end
 
 class ModelsController < ActionController::Base
   attr_accessor :current_user
@@ -164,5 +181,17 @@ class PermissionCheckTest < ActionController::TestCase
   def test_destroy_if_model_doesnt_respond_to_destroyable
     @model.expects(:destroy)
     post :destroy, :id => 1
+  end
+  
+  def test_works_with_namespaced_controllers
+    @controller = Admin::PropertiesController.new
+    Property.expects(:find)
+    get :show
+  end
+  
+  def test_works_with_irregular_plurals
+    @controller = PropertiesController.new
+    Property.expects(:find)
+    get :show
   end
 end
