@@ -62,34 +62,34 @@ module TotallyRestfulAuthorization
       end
     end
   
-    def updatable_by?(user, field = nil)
-      check_permissions self.class.update_permissions, user, field
+    def updatable_by?(user, attributes = {})
+      check_permissions self.class.update_permissions, user, attributes
     end
   
-    def viewable_by?(user, field = nil)
-      check_permissions self.class.view_permissions, user, field
+    def viewable_by?(user, attributes = {})
+      check_permissions self.class.view_permissions, user, attributes
     end
   
-    def creatable_by?(user, field = nil)
-      check_permissions self.class.create_permissions, user, field
+    def creatable_by?(user, attributes = {})
+      check_permissions self.class.create_permissions, user, attributes
     end
   
-    def destroyable_by?(user, field = nil)
-      check_permissions self.class.destroy_permissions, user, field
+    def destroyable_by?(user, attributes = {})
+      check_permissions self.class.destroy_permissions, user, attributes
     end
   
     private
   
-    def check_permissions(permissions, user, field)
+    def check_permissions(permissions, user, attributes)
       permissions.keys.inject(false) do |result, role|
-        result || check_permission(permissions[role], role, user, field)
+        result || check_permission(permissions[role], role, user, attributes)
       end
     end
   
-    def check_permission(permission, role, user, field)
+    def check_permission(permission, role, user, attributes)
       permission.inject(false) do |result, role_options|
-        result || (user_has_permission(user, role) && field_in_only_list(field, role_options) &&
-          !field_in_except_list(field, role_options) && condition_met(user, role_options))
+        result || (user_has_permission(user, role) && attributes_in_only_list(attributes, role_options) &&
+          !attributes_in_except_list(attributes, role_options) && condition_met(user, role_options))
       end
     end
   
@@ -105,17 +105,17 @@ module TotallyRestfulAuthorization
       end
     end
   
-    def field_in_only_list(field, options)
+    def attributes_in_only_list(attributes, options)
       if options[:only]
-        options[:only].include?(field)
+        (attributes.symbolize_keys.keys - options[:only]).empty?
       else
         true
       end
     end
   
-    def field_in_except_list(field, options)
+    def attributes_in_except_list(attributes, options)
       if options[:except]
-        options[:except].include?(field)
+        !(options[:except] & attributes.symbolize_keys.keys).empty?
       else
         false
       end

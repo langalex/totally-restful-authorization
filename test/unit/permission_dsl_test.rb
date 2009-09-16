@@ -71,22 +71,43 @@ class PermissionDslTest < Test::Unit::TestCase
   
   def test_allows_role_access_only_to_specific_field
     @clazz.send :updatable_by, :admin, :only => [:name]
-    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), :name)
+    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), {:name => nil})
   end
   
   def test_forbids_role_access_to_fields_not_in_only_array
     @clazz.send :updatable_by, :admin, :only => [:name]
-    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), :email)
+    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), {:email => nil})
+  end
+  
+  def test_forbids_role_access_to_some_fields_not_in_only_array
+    @clazz.send :updatable_by, :admin, :only => [:name]
+    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), {:email => nil, :name => nil})
   end
   
   def test_allows_role_access_to_fields_not_in_except_array
     @clazz.send :updatable_by, :admin, :except => [:email]
-    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), :name)
+    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), {:name => nil})
+  end
+  
+  def test_allows_role_access_to_fields_not_in_except_array_with_multiple_excepts
+    @clazz.send :updatable_by, :admin, :except => [:email, :age]
+    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), {:name => nil})
   end
   
   def test_forbids_role_access_to_fields_in_except_array
     @clazz.send :updatable_by, :admin, :except => [:email]
-    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), :email)
+    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), {:email => nil})
+  end
+  
+  def test_forbids_role_access_to_fields_contained_in_except_array
+    @clazz.send :updatable_by, :admin, :except => [:email, :name]
+    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), {:email => nil})
+  end
+  
+  
+  def test_forbids_role_access_to_some_fields_in_except_array
+    @clazz.send :updatable_by, :admin, :except => [:email]
+    assert !@clazz.new.updatable_by?(stub('admin', :admin? => true), {:email => nil, :name => nil})
   end
   
   def test_allows_access_if_conditions_met
@@ -108,7 +129,7 @@ class PermissionDslTest < Test::Unit::TestCase
   def test_multiple_option_declarations_per_role_dont_overwrite_one_another
     @clazz.send :updatable_by, :admin, :only => [:user]
     @clazz.send :updatable_by, :admin, :only => [:email]
-    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), :user)
+    assert @clazz.new.updatable_by?(stub('admin', :admin? => true), {:user => nil})
   end
   
   def test_viewable_by?
