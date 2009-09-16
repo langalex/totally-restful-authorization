@@ -42,12 +42,12 @@ module TotallyRestfulAuthorization
     end
     
     def object_params
-      params[object_name] || {}
+      params[object_name]
     end
   
     def permission_granted?(_object)
       if _object.respond_to? actionable_method.to_sym
-        _object.send(actionable_method, current_user, object_params)
+        _object.send(actionable_method, current_user, object_params || {})
       else
         true
       end
