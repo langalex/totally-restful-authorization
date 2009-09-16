@@ -84,7 +84,7 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_check_permission_without_object_parameters
     @model.stubs(:respond_to?).with(:viewable_by?).returns(true)
-    @model.expects(:viewable_by?).with(@user, nil).returns(false)
+    @model.expects(:viewable_by?).with(@user, {}).returns(false)
     get :show, :id => 1
   end
   
@@ -207,5 +207,4 @@ class PermissionCheckTest < ActionController::TestCase
     Property.expects(:find)
     get :show
   end
-  
 end

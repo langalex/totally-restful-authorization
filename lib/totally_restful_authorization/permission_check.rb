@@ -42,7 +42,7 @@ module TotallyRestfulAuthorization
     end
     
     def object_params
-      params[object_name]
+      params[object_name] || {}
     end
   
     def permission_granted?(_object)

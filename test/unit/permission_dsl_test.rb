@@ -5,7 +5,6 @@ class PermissionDslTest < Test::Unit::TestCase
     include TotallyRestfulAuthorization::PermissionDsl
   end
   
-  
   def setup
     @clazz = Model
     @clazz.update_permissions.clear
