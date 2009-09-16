@@ -68,16 +68,29 @@ class PermissionCheckTest < ActionController::TestCase
     Model.stubs(:new).returns(@model)
   end
   
+  
   def test_doesnt_update_if_model_not_updatable
     @model.stubs(:respond_to?).with(:updatable_by?).returns(true)
-    @model.stubs(:updatable_by?).with(@user).returns(false)
+    @model.stubs(:updatable_by?).returns(false)
     @model.expects(:attributes=).never
     post :update, :id => 1
   end
   
+  def test_check_permission_with_object_parameters
+    @model.stubs(:respond_to?).with(:updatable_by?).returns(true)
+    @model.expects(:updatable_by?).with(@user, {'name' => 'test'})
+    post :update, :model => {:name => 'test'}, :id => 1
+  end
+  
+  def test_check_permission_without_object_parameters
+    @model.stubs(:respond_to?).with(:viewable_by?).returns(true)
+    @model.expects(:viewable_by?).with(@user, nil).returns(false)
+    get :show, :id => 1
+  end
+  
   def test_updates_if_model_updatable
     @model.stubs(:respond_to?).with(:updatable_by?).returns(true)
-    @model.stubs(:updatable_by?).with(@user).returns(true)
+    @model.stubs(:updatable_by?).returns(true)
     @model.expects(:attributes=)
     post :update, :id => 1
   end
@@ -89,7 +102,7 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_doesnt_show_if_not_viewable
     @model.stubs(:respond_to?).with(:viewable_by?).returns(true)
-    @model.stubs(:viewable_by?).with(@user).returns(false)
+    @model.stubs(:viewable_by?).returns(false)
     get :show, :id => 1
     assert_response 403
     assert_nil assigns(:model)
@@ -97,7 +110,7 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_shows_if_viewable
     @model.stubs(:respond_to?).with(:viewable_by?).returns(true)
-    @model.stubs(:viewable_by?).with(@user).returns(true)
+    @model.stubs(:viewable_by?).returns(true)
     get :show, :id => 1
     assert_response :success
   end
@@ -109,14 +122,14 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_doesnt_edit_if_model_not_updatable
     @model.stubs(:respond_to?).with(:updatable_by?).returns(true)
-    @model.stubs(:updatable_by?).with(@user).returns(false)
+    @model.stubs(:updatable_by?).returns(false)
     get :edit, :id => 1
     assert_response 403
   end
   
   def test_does_edit_if_model_updatable
     @model.stubs(:respond_to?).with(:updatable_by?).returns(true)
-    @model.stubs(:updatable_by?).with(@user).returns(true)
+    @model.stubs(:updatable_by?).returns(true)
     get :edit, :id => 1
     assert_response 200
   end
@@ -128,14 +141,14 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_doesnt_new_if_model_not_creatable
     @model.stubs(:respond_to?).with(:creatable_by?).returns(true)
-    @model.stubs(:creatable_by?).with(@user).returns(false)
+    @model.stubs(:creatable_by?).returns(false)
     get :new
     assert_response 403
   end
   
   def test_does_new_if_model_creatable
     @model.stubs(:respond_to?).with(:creatable_by?).returns(true)
-    @model.stubs(:creatable_by?).with(@user).returns(true)
+    @model.stubs(:creatable_by?).returns(true)
     get :new
     assert_response :success
   end
@@ -147,14 +160,14 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_doesnt_create_if_model_not_creatable
     @model.stubs(:respond_to?).with(:creatable_by?).returns(true)
-    @model.stubs(:creatable_by?).with(@user).returns(false)
+    @model.stubs(:creatable_by?).returns(false)
     Model.expects(:create).never
     post :create
   end
   
   def test_creates_if_model_creatable
     @model.stubs(:respond_to?).with(:creatable_by?).returns(true)
-    @model.stubs(:creatable_by?).with(@user).returns(true)
+    @model.stubs(:creatable_by?).returns(true)
     Model.expects(:create)
     post :create
   end
@@ -166,14 +179,14 @@ class PermissionCheckTest < ActionController::TestCase
   
   def test_doesnt_destroy_if_model_not_destroyable
     @model.stubs(:respond_to?).with(:destroyable_by?).returns(true)
-    @model.stubs(:destroyable_by?).with(@user).returns(false)
+    @model.stubs(:destroyable_by?).returns(false)
     @model.expects(:destroy).never
     post :destroy, :id => 1
   end
   
   def test_destroy_if_model_destroyable
     @model.stubs(:respond_to?).with(:destroyable_by?).returns(true)
-    @model.stubs(:destroyable_by?).with(@user).returns(true)
+    @model.stubs(:destroyable_by?).returns(true)
     @model.expects(:destroy)
     post :destroy, :id => 1
   end
@@ -194,4 +207,5 @@ class PermissionCheckTest < ActionController::TestCase
     Property.expects(:find)
     get :show
   end
+  
 end
